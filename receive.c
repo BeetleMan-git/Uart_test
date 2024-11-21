@@ -51,7 +51,7 @@ int main() {
 
     // receive
     char buffer[256];
-    bool flag = true;
+    int flag = 1;
     while(flag){
         int bytes_read = read(uart_fd, buffer, sizeof(buffer));
         if (bytes_read > 0) {
@@ -59,7 +59,7 @@ int main() {
             printf("Got: %s\n", buffer);
         } else if (bytes_read < 0) {
             perror("Error in transmission");
-            flag = false;
+            flag = 0;
         }
 
          sleep(1); // ?

@@ -16,15 +16,15 @@ int configure_uart(int uart_fd) {
     cfsetispeed(&options, B9600);
     cfsetospeed(&options, B9600);
 
-    options.c_cflag &= ~PARENB;
-    options.c_cflag &= ~CSTOPB;
-    options.c_cflag &= ~CSIZE;
-    options.c_cflag |= CS8;
+    options.c_cflag &= ~PARENB; // нет чётности
+    options.c_cflag &= ~CSTOPB; // 1 стоп бит
+    options.c_cflag &= ~CSIZE; // Очищаем маску размера данных
+    options.c_cflag |= CS8; // 8 бит
 
-    options.c_cflag &= ~CRTSCTS;
-    options.c_iflag &= ~(IXON | IXOFF | IXANY);
+    options.c_cflag &= ~CRTSCTS;  // апаратное управление потоком
+    options.c_iflag &= ~(IXON | IXOFF | IXANY); // программное управление потоком
 
-    options.c_cflag |= (CLOCAL | CREAD);
+    options.c_cflag |= (CLOCAL | CREAD); // cread включает возможность чтения через uart // clocal отключает линии, которые сейчас не нужны
 
     if (tcsetattr(uart_fd, TCSANOW, &options) != 0) {
         perror("Error in settings");
@@ -39,7 +39,7 @@ int main() {
 //==========================SAME_PART_START==========================\\
 
     // Open port
-    int uart_fd = open("/dev/ttyS0", O_RDWR | O_NOCTTY | O_NDELAY);
+    int uart_fd = open("/dev/ttyS0", O_RDWR | O_NOCTTY | O_NONBLOCK/*O_NDELAY*/); // O_RDWR - открыт на чтение и запись O_NOCTTY не делать управ терминалом O_NDELAY работа в неблокирующем режиме, чтоб процесс не стоял на сенд/рессив . O_NONBLOCK для рида?
     if (uart_fd == -1) {
         perror("Error port open");
         return -1;
